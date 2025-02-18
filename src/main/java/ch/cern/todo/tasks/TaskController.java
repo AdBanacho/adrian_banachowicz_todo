@@ -1,6 +1,7 @@
 package ch.cern.todo.tasks;
 
 import ch.cern.todo.tasks.dataModels.TaskResource;
+import ch.cern.todo.tasks.dataModels.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,5 +40,20 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<TaskResource> saveTask(@RequestBody TaskResource taskResource){
         return ResponseEntity.ok(taskService.saveTask(taskResource));
+    }
+
+    @PutMapping(value = "/updateDetails")
+    public ResponseEntity<TaskResource> updateDetails(@RequestBody TaskResource taskResource){
+        return ResponseEntity.ok(taskService.updateDetails(taskResource));
+    }
+
+    @PutMapping(value = "/updateStatus/{id}")
+    public ResponseEntity<TaskResource> updateStatus(@PathVariable String id, @RequestParam TaskStatus taskStatus){
+        return ResponseEntity.ok(taskService.updateStatus(id, taskStatus));
+    }
+
+    @PutMapping(value = "/updateCategory")
+    public ResponseEntity<TaskResource> updateCategory(@RequestBody TaskResource taskResource){
+        return ResponseEntity.ok(taskService.updateCategory(taskResource));
     }
 }

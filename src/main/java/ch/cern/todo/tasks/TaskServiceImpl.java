@@ -53,27 +53,57 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResource saveTask(TaskResource taskResource) {
         Category category = categoryRepository.findByCategoryNameAndProcessedTo(taskResource.categoryName()).orElse(null);
-        validateTaskInput(taskResource, category);
+        validateNewTaskInput(taskResource, category);
         Task taskToSave = taskResource.transferToEntity(TaskStatus.CREATED, category);
         Task savedTask = taskRepository.save(taskToSave);
 
         return mapToResourceWithFullNames(savedTask);
     }
 
-    private void validateTaskInput(TaskResource taskResource, Category category) {
+    @Override
+    public TaskResource updateDetails(TaskResource taskResource) {
+        Task existingTask = taskRepository.findByIdAndProcessedTo(taskResource.id()).orElse(null);
+        validateUpdatingTaskInput(taskResource, existingTask);
+        Task taskToUpdate = taskResource.transferToEntity(existingTask);
+        existingTask.closeTaskEntity();
+        Task updatedTask = taskRepository.save(taskToUpdate);
+        return mapToResourceWithFullNames(updatedTask);
+    }
+
+    @Override
+    public TaskResource updateStatus(String id, TaskStatus taskStatus) {
+        return null;
+    }
+
+    @Override
+    public TaskResource updateCategory(TaskResource taskResource) {
+        return null;
+    }
+
+    private void validateNewTaskInput(TaskResource taskResource, Category category) {
         List<String> errorMessages = new ArrayList<>();
         String taskId = taskResource.id();
         String existingTaskId = taskRepository.findByIdAndProcessedTo(taskId).map(Task::getId).orElse(null);
         InputFieldValidator.validateIfEntityExists("Task", "id", existingTaskId);
 
-        if (category == null){
-            String categoryName = taskResource.categoryName().isEmpty() ? "" : taskResource.categoryName();
-            throw new EntityNotExistException(("Category \"" + categoryName + "\" not exists"));
-        }
+        String categoryName = taskResource.categoryName().isEmpty() ? "" : taskResource.categoryName();
+        InputFieldValidator.validateIfNotEntityExists("Category", categoryName, category);
 
         InputFieldValidator.validateFieldNotEmpty(TASK, "name", taskResource.name(), errorMessages);
         InputFieldValidator.validateFieldNotEmpty(TASK, "categoryName", taskResource.categoryName(), errorMessages);
         InputFieldValidator.validateFieldNotEmpty(TASK, "reportedBy", taskResource.reportedBy(), errorMessages);
+        InputFieldValidator.validateTimeIfNotInPast("Deadline", taskResource.deadLine(), errorMessages);
+        if (!errorMessages.isEmpty()) {
+            throw new ValidationException(String.join(", \n", errorMessages));
+        }
+    }
+
+    private void validateUpdatingTaskInput(TaskResource taskResource, Task existingTask) {
+        List<String> errorMessages = new ArrayList<>();
+        InputFieldValidator.validateIfNotEntityExists(TASK, taskResource.id(), existingTask);
+        InputFieldValidator.validateIfFieldChanged(existingTask.getCategory().getName(), taskResource.categoryName(), errorMessages);
+        InputFieldValidator.validateIfFieldChanged(existingTask.getReportedBy(), taskResource.reportedByName(), errorMessages);
+        InputFieldValidator.validateFieldNotEmpty(TASK, "name", taskResource.name(), errorMessages);
         InputFieldValidator.validateTimeIfNotInPast("Deadline", taskResource.deadLine(), errorMessages);
         if (!errorMessages.isEmpty()) {
             throw new ValidationException(String.join(", \n", errorMessages));

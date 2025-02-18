@@ -69,4 +69,8 @@ public record TaskResource(String id, String name, String description, Timestamp
     public Task transferToEntity(TaskStatus taskStatus, Category category) {
         return Task.from(this, taskStatus, category);
     }
+
+    public Task transferToEntity(Task task) {
+        return Task.from(this, task);
+    }
 }

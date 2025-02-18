@@ -32,7 +32,8 @@ public class Task {
 
     protected Task(){}
 
-    public Task(String name,
+    public Task(String id,
+                String name,
                 String description,
                 Timestamp deadLine,
                 TaskStatus status,
@@ -43,7 +44,7 @@ public class Task {
                 Timestamp processedFrom,
                 Timestamp processedTo
                 ){
-        this.id = null;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.deadLine = deadLine;
@@ -58,6 +59,7 @@ public class Task {
 
     public static Task from(TaskResource taskResource, TaskStatus taskStatus, Category category){
         return new Task(
+                null,
                 taskResource.name(),
                 taskResource.description(),
                 taskResource.deadLine(),
@@ -66,6 +68,22 @@ public class Task {
                 taskResource.assignedTo(),
                 taskResource.reportedBy(),
                 category,
+                Timestamp.valueOf(LocalDateTime.now()),
+                Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
+        );
+    }
+
+    public static Task from(TaskResource taskResource, Task task){
+        return new Task(
+                task.id,
+                taskResource.name(),
+                taskResource.description(),
+                taskResource.deadLine(),
+                task.getStatus(),
+                taskResource.priorityStatus(),
+                taskResource.assignedTo(),
+                task.getReportedBy(),
+                task.getCategory(),
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
         );
@@ -123,6 +141,10 @@ public class Task {
         return processedTo;
     }
 
+    public void closeTaskEntity() {
+        this.processedTo = Timestamp.valueOf(LocalDateTime.now());
+        this.category = null;
+    }
 
 
 }
