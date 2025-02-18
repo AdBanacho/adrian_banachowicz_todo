@@ -52,8 +52,8 @@ public class TaskController {
         return ResponseEntity.ok(taskService.updateStatus(id, taskStatus));
     }
 
-    @PutMapping(value = "/updateCategory")
-    public ResponseEntity<TaskResource> updateCategory(@RequestBody TaskResource taskResource){
-        return ResponseEntity.ok(taskService.updateCategory(taskResource));
+    @PutMapping(value = "/updateCategory/{id}")
+    public ResponseEntity<TaskResource> updateCategory(@PathVariable String id, @RequestParam String categoryName){
+        return ResponseEntity.ok(taskService.updateCategory(id, categoryName));
     }
 }

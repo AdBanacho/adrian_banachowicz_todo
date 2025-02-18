@@ -75,7 +75,7 @@ public class Task {
 
     public static Task from(TaskResource taskResource, Task task){
         return new Task(
-                task.id,
+                task.getId(),
                 taskResource.name(),
                 taskResource.description(),
                 taskResource.deadLine(),
@@ -84,6 +84,38 @@ public class Task {
                 taskResource.assignedTo(),
                 task.getReportedBy(),
                 task.getCategory(),
+                Timestamp.valueOf(LocalDateTime.now()),
+                Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
+        );
+    }
+
+    public Task updateStatus(TaskStatus taskStatus){
+        return new Task(
+                this.getId(),
+                this.getName(),
+                this.getDescription(),
+                this.getDeadLine(),
+                taskStatus,
+                this.getPriorityStatus(),
+                this.getAssignedTo(),
+                this.getReportedBy(),
+                this.getCategory(),
+                Timestamp.valueOf(LocalDateTime.now()),
+                Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
+        );
+    }
+
+    public Task updateCategory(Category category){
+        return new Task(
+                this.getId(),
+                this.getName(),
+                this.getDescription(),
+                this.getDeadLine(),
+                this.getStatus(),
+                this.getPriorityStatus(),
+                this.getAssignedTo(),
+                this.getReportedBy(),
+                category,
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
         );

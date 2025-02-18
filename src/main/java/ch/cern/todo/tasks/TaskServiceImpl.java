@@ -2,7 +2,6 @@ package ch.cern.todo.tasks;
 
 import ch.cern.todo.category.CategoryRepository;
 import ch.cern.todo.category.dataModels.Category;
-import ch.cern.todo.exceptions.EntityNotExistException;
 import ch.cern.todo.exceptions.ValidationException;
 import ch.cern.todo.profile.ProfileService;
 import ch.cern.todo.tasks.dataModels.Task;
@@ -21,6 +20,7 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService {
 
     private static final String TASK = "Task";
+    private static final String CATEGORY = "Category";
     private final TaskRepository taskRepository;
     private final CategoryRepository categoryRepository;
     private final ProfileService profileService;
@@ -54,41 +54,18 @@ public class TaskServiceImpl implements TaskService {
     public TaskResource saveTask(TaskResource taskResource) {
         Category category = categoryRepository.findByCategoryNameAndProcessedTo(taskResource.categoryName()).orElse(null);
         validateNewTaskInput(taskResource, category);
-        Task taskToSave = taskResource.transferToEntity(TaskStatus.CREATED, category);
+        Task taskToSave = taskResource.transferToNewEntity(TaskStatus.CREATED, category);
         Task savedTask = taskRepository.save(taskToSave);
 
         return mapToResourceWithFullNames(savedTask);
-    }
-
-    @Override
-    public TaskResource updateDetails(TaskResource taskResource) {
-        Task existingTask = taskRepository.findByIdAndProcessedTo(taskResource.id()).orElse(null);
-        validateUpdatingTaskInput(taskResource, existingTask);
-        Task taskToUpdate = taskResource.transferToEntity(existingTask);
-        existingTask.closeTaskEntity();
-        Task updatedTask = taskRepository.save(taskToUpdate);
-        return mapToResourceWithFullNames(updatedTask);
-    }
-
-    @Override
-    public TaskResource updateStatus(String id, TaskStatus taskStatus) {
-        return null;
-    }
-
-    @Override
-    public TaskResource updateCategory(TaskResource taskResource) {
-        return null;
     }
 
     private void validateNewTaskInput(TaskResource taskResource, Category category) {
         List<String> errorMessages = new ArrayList<>();
         String taskId = taskResource.id();
         String existingTaskId = taskRepository.findByIdAndProcessedTo(taskId).map(Task::getId).orElse(null);
-        InputFieldValidator.validateIfEntityExists("Task", "id", existingTaskId);
-
-        String categoryName = taskResource.categoryName().isEmpty() ? "" : taskResource.categoryName();
-        InputFieldValidator.validateIfNotEntityExists("Category", categoryName, category);
-
+        InputFieldValidator.validateIfEntityExists(TASK, "id", existingTaskId);
+        InputFieldValidator.validateIfNotEntityExists(CATEGORY, taskResource.categoryName(), category);
         InputFieldValidator.validateFieldNotEmpty(TASK, "name", taskResource.name(), errorMessages);
         InputFieldValidator.validateFieldNotEmpty(TASK, "categoryName", taskResource.categoryName(), errorMessages);
         InputFieldValidator.validateFieldNotEmpty(TASK, "reportedBy", taskResource.reportedBy(), errorMessages);
@@ -98,16 +75,55 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    public TaskResource updateDetails(TaskResource taskResource) {
+        Task existingTask = taskRepository.findByIdAndProcessedTo(taskResource.id()).orElse(null);
+        validateUpdatingTaskInput(taskResource, existingTask);
+        Task taskToUpdate = taskResource.transferToExistingEntity(existingTask);
+        return updateTask(existingTask, taskToUpdate);
+    }
+
     private void validateUpdatingTaskInput(TaskResource taskResource, Task existingTask) {
         List<String> errorMessages = new ArrayList<>();
         InputFieldValidator.validateIfNotEntityExists(TASK, taskResource.id(), existingTask);
         InputFieldValidator.validateIfFieldChanged(existingTask.getCategory().getName(), taskResource.categoryName(), errorMessages);
-        InputFieldValidator.validateIfFieldChanged(existingTask.getReportedBy(), taskResource.reportedByName(), errorMessages);
+        InputFieldValidator.validateIfFieldChanged(existingTask.getReportedBy(), taskResource.reportedBy(), errorMessages);
         InputFieldValidator.validateFieldNotEmpty(TASK, "name", taskResource.name(), errorMessages);
         InputFieldValidator.validateTimeIfNotInPast("Deadline", taskResource.deadLine(), errorMessages);
         if (!errorMessages.isEmpty()) {
             throw new ValidationException(String.join(", \n", errorMessages));
         }
     }
+
+    @Override
+    public TaskResource updateStatus(String id, TaskStatus taskStatus) {
+        Task existingTask = taskRepository.findByIdAndProcessedTo(id).orElse(null);
+        InputFieldValidator.validateIfNotEntityExists(TASK, id, existingTask);
+        Task taskWithUpdatedStatus = existingTask.updateStatus(taskStatus);
+        return updateTask(existingTask, taskWithUpdatedStatus);
+    }
+
+    @Override
+    public TaskResource updateCategory(String id, String categoryName) {
+        Task existingTask = taskRepository.findByIdAndProcessedTo(id).orElse(null);
+        Category category = categoryRepository.findByCategoryNameAndProcessedTo(categoryName).orElse(null);
+        InputFieldValidator.validateIfNotEntityExists(TASK, id, existingTask);
+        InputFieldValidator.validateIfNotEntityExists(CATEGORY, categoryName, category);
+        Task taskWithUpdatedCategory = existingTask.updateCategory(category);
+        return updateTask(existingTask, taskWithUpdatedCategory);
+    }
+
+    private TaskResource updateTask(Task existingTask, Task taskWithUpdatedStatus) {
+        closeTaskEntity(existingTask);
+        Task updatedTask = taskRepository.save(taskWithUpdatedStatus);
+        return mapToResourceWithFullNames(updatedTask);
+    }
+
+    private void closeTaskEntity(Task existingTask) {
+        existingTask.closeTaskEntity();
+        taskRepository.save(existingTask);
+    }
+
+
 
 }

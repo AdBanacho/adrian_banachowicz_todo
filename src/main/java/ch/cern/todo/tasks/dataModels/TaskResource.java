@@ -66,11 +66,11 @@ public record TaskResource(String id, String name, String description, Timestamp
                 task.getCategory().getName());
     }
 
-    public Task transferToEntity(TaskStatus taskStatus, Category category) {
+    public Task transferToNewEntity(TaskStatus taskStatus, Category category) {
         return Task.from(this, taskStatus, category);
     }
 
-    public Task transferToEntity(Task task) {
+    public Task transferToExistingEntity(Task task) {
         return Task.from(this, task);
     }
 }

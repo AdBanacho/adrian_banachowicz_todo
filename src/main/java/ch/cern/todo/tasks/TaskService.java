@@ -19,6 +19,5 @@ public interface TaskService {
 
     TaskResource updateStatus(String id, TaskStatus taskStatus);
 
-    TaskResource updateCategory(TaskResource taskResource);
-
+    TaskResource updateCategory(String id, String categoryName);
 }
