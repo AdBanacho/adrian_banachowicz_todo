@@ -2,18 +2,15 @@ package ch.cern.todo.tasks.dataModels;
 
 import java.util.Arrays;
 
-public enum TaskStatus {
-    ACTIVE("Active"),
-    IN_PROGRESS("In Progress"),
-    BLOCKED("Blocked"),
-    HOLD("Hold"),
-    INACTIVE("Inactive"),
-    DELETED("Deleted"),
-    COMPLETED("Completed"),
-    CLOSED("Closed");
+public enum TaskPriorityStatus {
+    LOW("Low"),
+    MEDIUM("Medium"),
+    HIGH("HIGH"),
+    CRITICAL("CRITICAL");
+
     private final String name;
 
-    TaskStatus(String name){
+    TaskPriorityStatus(String name){
         this.name = name;
     }
 
@@ -21,7 +18,7 @@ public enum TaskStatus {
         return name;
     }
 
-    public static TaskStatus getByName(String name){
+    public static TaskPriorityStatus getByName(String name){
         return Arrays.stream(values())
                 .filter(status -> status.getName().equals(name))
                 .findFirst()
