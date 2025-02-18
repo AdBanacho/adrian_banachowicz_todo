@@ -8,12 +8,12 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @IdClass(CategoryKey.class)
 public class Category {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Column(unique = true)
     private String name;
@@ -28,12 +28,13 @@ public class Category {
 
     protected Category(){};
 
-    public Category(String name,
+    public Category(String id,
+                    String name,
                     String description,
                     List<Task> tasks,
                     Timestamp processedFrom,
                     Timestamp processedTo){
-        this.id = null;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.tasks = tasks;
@@ -43,6 +44,7 @@ public class Category {
 
     public static Category from(CategoryResource categoryResource){
         return new Category(
+                UUID.randomUUID().toString(),
                 categoryResource.name(),
                 categoryResource.description(),
                 Collections.emptyList(),

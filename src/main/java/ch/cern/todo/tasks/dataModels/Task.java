@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @IdClass(TaskKey.class)
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private String name;
     private String description;
@@ -59,7 +59,7 @@ public class Task {
 
     public static Task from(TaskResource taskResource, TaskStatus taskStatus, Category category){
         return new Task(
-                null,
+                UUID.randomUUID().toString(),
                 taskResource.name(),
                 taskResource.description(),
                 taskResource.deadLine(),
@@ -177,6 +177,4 @@ public class Task {
         this.processedTo = Timestamp.valueOf(LocalDateTime.now());
         this.category = null;
     }
-
-
 }
