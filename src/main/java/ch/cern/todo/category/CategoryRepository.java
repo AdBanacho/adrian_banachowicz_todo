@@ -19,4 +19,7 @@ public interface CategoryRepository extends JpaRepository<Category, CategoryKey>
 
     @Query("SELECT c FROM Category c WHERE c.name = :categoryName AND c.processedTo = " + INFINITE_TIME)
     Optional<Category> findByCategoryNameAndProcessedTo(String categoryName);
+
+    @Query("SELECT c FROM Category c WHERE c.id = :id AND c.processedTo = " + INFINITE_TIME)
+    Optional<Category> findByIdAndProcessedTo(String id);
 }

@@ -38,8 +38,12 @@ public record CategoryResource(String id, String name, String description, List<
         );
     }
 
-    public Category transferToEntity(){
+    public Category transferToNewEntity(){
         return Category.from(this);
     }
+    public Category transferToExistingEntity(Category category){
+        return Category.from(this, category);
+    }
+
 }
 

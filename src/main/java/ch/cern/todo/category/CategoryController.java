@@ -33,4 +33,9 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.saveCategory(categoryResource));
     }
 
+    @PutMapping(value = "/updateDetails")
+    public ResponseEntity<CategoryResource> updateDetails(@RequestBody CategoryResource categoryResource){
+        return ResponseEntity.ok(categoryService.updateDetails(categoryResource));
+    }
+
 }

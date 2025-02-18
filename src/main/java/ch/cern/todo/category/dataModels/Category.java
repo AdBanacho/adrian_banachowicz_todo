@@ -53,6 +53,17 @@ public class Category {
         );
     }
 
+    public static Category from(CategoryResource categoryResource, Category category){
+        return new Category(
+                category.getId(),
+                categoryResource.name(),
+                categoryResource.description(),
+                category.getTasks(),
+                Timestamp.valueOf(LocalDateTime.now()),
+                Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
+        );
+    }
+
     public CategoryResource transferToResource(){
         return CategoryResource.from(this);
     }
@@ -83,5 +94,10 @@ public class Category {
 
     public Timestamp getProcessedTo() {
         return processedTo;
+    }
+
+    public void closeCategoryEntity() {
+        this.processedTo = Timestamp.valueOf(LocalDateTime.now());
+        this.tasks = Collections.emptyList();
     }
 }

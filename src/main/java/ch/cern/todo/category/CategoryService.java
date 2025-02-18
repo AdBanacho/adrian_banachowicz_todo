@@ -11,4 +11,6 @@ public interface CategoryService {
     CategoryResource getCategory(String categoryName);
 
     CategoryResource saveCategory(CategoryResource categoryResource);
+
+    CategoryResource updateDetails(CategoryResource categoryResource);
 }

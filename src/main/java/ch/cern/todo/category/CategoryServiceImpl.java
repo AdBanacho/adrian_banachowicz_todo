@@ -43,13 +43,13 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResource saveCategory(CategoryResource categoryResource) {
-        validateCategoryInput(categoryResource);
-        Category categoryToSave = categoryResource.transferToEntity();
+        validateNewCategoryInput(categoryResource);
+        Category categoryToSave = categoryResource.transferToNewEntity();
         Category savedCategory = categoryRepository.save(categoryToSave);
         return savedCategory.transferToResource();
     }
 
-    private void validateCategoryInput(CategoryResource categoryResource) {
+    private void validateNewCategoryInput(CategoryResource categoryResource) {
         List<String> errorMessages = new ArrayList<>();
         String existingCategoryName = categoryRepository.findByCategoryNameAndProcessedTo(categoryResource.name())
                 .map(Category::getName)
@@ -58,6 +58,26 @@ public class CategoryServiceImpl implements CategoryService {
         InputFieldValidator.validateIfEntityExists(CATEGORY, "name", existingCategoryName);
         InputFieldValidator.validateFieldNotEmpty(CATEGORY,"name", categoryResource.name(), errorMessages);
 
+        if (!errorMessages.isEmpty()) {
+            throw new ValidationException(String.join(", \n", errorMessages));
+        }
+    }
+
+    @Override
+    public CategoryResource updateDetails(CategoryResource categoryResource) {
+        Category existingCategory = categoryRepository.findByIdAndProcessedTo(categoryResource.id()).orElse(null);
+        validateUpdatingCategoryInput(categoryResource, existingCategory);
+        Category categoryToUpdate = categoryResource.transferToExistingEntity(existingCategory);
+        existingCategory.closeCategoryEntity();
+        categoryRepository.save(existingCategory);
+        Category updatedCategory = categoryRepository.save(categoryToUpdate);
+        return updatedCategory.transferToResource();
+    }
+
+    private static void validateUpdatingCategoryInput(CategoryResource categoryResource, Category category) {
+        List<String> errorMessages = new ArrayList<>();
+        InputFieldValidator.validateIfNotEntityExists(CATEGORY, categoryResource.id(), category);
+        InputFieldValidator.validateFieldNotEmpty(CATEGORY, "name", categoryResource.name(), errorMessages);
         if (!errorMessages.isEmpty()) {
             throw new ValidationException(String.join(", \n", errorMessages));
         }
