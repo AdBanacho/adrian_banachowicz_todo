@@ -5,8 +5,8 @@ import java.util.Arrays;
 public enum TaskPriorityStatus {
     LOW("Low"),
     MEDIUM("Medium"),
-    HIGH("HIGH"),
-    CRITICAL("CRITICAL");
+    HIGH("High"),
+    CRITICAL("Critical");
 
     private final String name;
 

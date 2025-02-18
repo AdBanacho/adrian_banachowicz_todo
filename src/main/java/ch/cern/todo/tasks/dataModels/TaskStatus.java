@@ -3,7 +3,7 @@ package ch.cern.todo.tasks.dataModels;
 import java.util.Arrays;
 
 public enum TaskStatus {
-    ACTIVE("Active"),
+    CREATED("Created"),
     IN_PROGRESS("In Progress"),
     BLOCKED("Blocked"),
     HOLD("Hold"),
@@ -11,6 +11,7 @@ public enum TaskStatus {
     DELETED("Deleted"),
     COMPLETED("Completed"),
     CLOSED("Closed");
+
     private final String name;
 
     TaskStatus(String name){
