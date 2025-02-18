@@ -45,6 +45,21 @@ public class TaskResource {
         this.categoryName = categoryName;
     }
 
+    public static TaskResource from(Task task){
+        return new TaskResource(
+                task.getId(),
+                task.getName(),
+                null,
+                task.getDeadLine(),
+                task.getStatus(),
+                task.getPriorityStatus(),
+                null,
+                null,
+                task.getReportedBy(),
+                null,
+                task.getCategory().getName());
+    }
+
     public static TaskResource from(Task task, String assignedToName, String reportedByName){
         return new TaskResource(
                 task.getId(),

@@ -25,6 +25,10 @@ public class Task {
 
     protected Task(){}
 
+    public TaskResource transferToResource(){
+        return TaskResource.from(this);
+    }
+
     public TaskResource transferToResource(String assignedToName, String reportedByName){
         return TaskResource.from(this, assignedToName, reportedByName);
     }

@@ -23,15 +23,16 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Page<TaskResource> getAllTasks(Pageable pageable) {
         Page<Task> tasks = taskRepository.findAllByProcessedTo(pageable);
-        return tasks.map(this::mapToResource);
+        return tasks.map(this::mapToResourceWithFullNames);
     }
 
     @Override
     public TaskResource getTask(String id) {
-        return taskRepository.findByIdAndProcessedTo(id).map(this::mapToResource).orElse(null);
+        return taskRepository.findByIdAndProcessedTo(id).map(this::mapToResourceWithFullNames).orElse(null);
     }
 
-    private TaskResource mapToResource(Task task) {
+    @Override
+    public TaskResource mapToResourceWithFullNames(Task task) {
         String assignedToName = profileService.getFullName(task.getAssignedTo());
         String reportedByName = profileService.getFullName(task.getReportedBy());
         return task.transferToResource(assignedToName, reportedByName);

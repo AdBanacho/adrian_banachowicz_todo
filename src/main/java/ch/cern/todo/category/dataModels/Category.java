@@ -1,6 +1,7 @@
 package ch.cern.todo.category.dataModels;
 
 import ch.cern.todo.tasks.dataModels.Task;
+import ch.cern.todo.tasks.dataModels.TaskResource;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -24,6 +25,10 @@ public class Category {
 
     public CategoryResource transferToResource(){
         return CategoryResource.from(this);
+    }
+
+    public CategoryResource transferToResource(List<TaskResource> tasksWithDetails){
+        return CategoryResource.from(this, tasksWithDetails);
     }
 
     public String getId() {
