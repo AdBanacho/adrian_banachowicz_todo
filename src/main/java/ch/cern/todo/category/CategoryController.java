@@ -18,7 +18,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping(value = "")
+    @GetMapping
     public ResponseEntity<List<CategoryResource>> getAllCategories(){
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
@@ -27,4 +27,10 @@ public class CategoryController {
     public ResponseEntity<CategoryResource> getCategory(@PathVariable String categoryName){
         return ResponseEntity.ok(categoryService.getCategory(categoryName));
     }
+
+    @PostMapping
+    public ResponseEntity<CategoryResource> saveCategory(@RequestBody CategoryResource categoryResource){
+        return ResponseEntity.ok(categoryService.saveCategory(categoryResource));
+    }
+
 }

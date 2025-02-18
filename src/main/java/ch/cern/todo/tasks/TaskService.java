@@ -11,4 +11,6 @@ public interface TaskService {
     TaskResource getTask(String id);
 
     TaskResource mapToResourceWithFullNames(Task task);
+
+    TaskResource saveTask(TaskResource taskResource);
 }

@@ -1,25 +1,16 @@
 package ch.cern.todo.tasks.dataModels;
 
+import ch.cern.todo.category.dataModels.Category;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.NonNull;
 
 import java.sql.Timestamp;
 
-public class TaskResource {
-    private String id;
-    private String name;
-    private String description;
-    private Timestamp deadLine;
-    private TaskStatus status;
-    private TaskPriorityStatus priorityStatus;
-    private String assignedTo;
-    private String assignedToName;
-    private String reportedBy;
-    private String reportedByName;
-    private String categoryName;
 
-
+public record TaskResource(String id, String name, String description, Timestamp deadLine, TaskStatus status,
+                           TaskPriorityStatus priorityStatus, String assignedTo, String assignedToName,
+                           String reportedBy, String reportedByName, String categoryName) {
     @JsonCreator
     public TaskResource(@JsonProperty String id,
                         @JsonProperty @NonNull String name,
@@ -45,7 +36,7 @@ public class TaskResource {
         this.categoryName = categoryName;
     }
 
-    public static TaskResource from(Task task){
+    public static TaskResource from(Task task) {
         return new TaskResource(
                 task.getId(),
                 task.getName(),
@@ -60,7 +51,7 @@ public class TaskResource {
                 task.getCategory().getName());
     }
 
-    public static TaskResource from(Task task, String assignedToName, String reportedByName){
+    public static TaskResource from(Task task, String assignedToName, String reportedByName) {
         return new TaskResource(
                 task.getId(),
                 task.getName(),
@@ -75,47 +66,7 @@ public class TaskResource {
                 task.getCategory().getName());
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Timestamp getDeadLine() {
-        return deadLine;
-    }
-
-    public TaskStatus getStatus() {
-        return status;
-    }
-
-    public TaskPriorityStatus getPriorityStatus() {
-        return priorityStatus;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public String getAssignedTo() {
-        return assignedTo;
-    }
-
-    public String getAssignedToName() {
-        return assignedToName;
-    }
-
-    public String getReportedBy() {
-        return reportedBy;
-    }
-
-    public String getReportedByName() {
-        return reportedByName;
+    public Task transferToEntity(TaskStatus taskStatus, Category category) {
+        return Task.from(this, taskStatus, category);
     }
 }

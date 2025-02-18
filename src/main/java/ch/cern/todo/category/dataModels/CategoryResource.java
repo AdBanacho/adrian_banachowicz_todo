@@ -4,18 +4,14 @@ import ch.cern.todo.tasks.dataModels.Task;
 import ch.cern.todo.tasks.dataModels.TaskResource;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 
-public class CategoryResource {
-    private String id;
-    private String name;
-    private String description;
-    private List<TaskResource> tasks;
-
+public record CategoryResource(String id, String name, String description, List<TaskResource> tasks) {
     @JsonCreator
     public CategoryResource(@JsonProperty String id,
-                            @JsonProperty String name,
+                            @JsonProperty @NonNull String name,
                             @JsonProperty String description,
                             @JsonProperty List<TaskResource> tasks) {
         this.id = id;
@@ -24,7 +20,7 @@ public class CategoryResource {
         this.tasks = tasks;
     }
 
-    public static CategoryResource from(Category category){
+    public static CategoryResource from(Category category) {
         return new CategoryResource(
                 category.getId(),
                 category.getName(),
@@ -33,7 +29,7 @@ public class CategoryResource {
         );
     }
 
-    public static CategoryResource from(Category category, List<TaskResource> tasksWithDetails){
+    public static CategoryResource from(Category category, List<TaskResource> tasksWithDetails) {
         return new CategoryResource(
                 category.getId(),
                 category.getName(),
@@ -42,20 +38,8 @@ public class CategoryResource {
         );
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public List<TaskResource> getTasks() {
-        return tasks;
+    public Category transferToEntity(){
+        return Category.from(this);
     }
 }
 

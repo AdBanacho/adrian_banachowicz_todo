@@ -35,4 +35,9 @@ public class TaskController {
     public ResponseEntity<TaskResource> getTask(@PathVariable String id){
         return ResponseEntity.ok(taskService.getTask(id));
     }
+
+    @PostMapping
+    public ResponseEntity<TaskResource> saveTask(@RequestBody TaskResource taskResource){
+        return ResponseEntity.ok(taskService.saveTask(taskResource));
+    }
 }
