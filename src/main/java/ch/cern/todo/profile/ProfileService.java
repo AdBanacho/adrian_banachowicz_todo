@@ -26,8 +26,9 @@ public class ProfileService {
     }
 
     public static void validationSameUser(List<String> profileIds, String fieldName){
-         if (!profileIds.contains(getLoggedInUsername())){
-             throw new NotPermissionException(fieldName);
+        String loggedInUsername = getLoggedInUsername();
+        if (!profileIds.contains(loggedInUsername)){
+             throw new NotPermissionException("User "+ loggedInUsername + " not allowed to change" + fieldName);
          };
     }
 
