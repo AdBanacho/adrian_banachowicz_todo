@@ -26,7 +26,7 @@ public class Category {
     @Column(name = "processed_to")
     private Timestamp processedTo;
 
-    protected Category(){};
+    public Category(){};
 
     public Category(String id,
                     String name,
@@ -119,5 +119,33 @@ public class Category {
     public void closeCategoryEntity() {
         this.processedTo = Timestamp.valueOf(LocalDateTime.now());
         this.tasks = Collections.emptyList();
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setStatus(CategoryStatus status) {
+        this.status = status;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    public void setProcessedFrom(Timestamp processedFrom) {
+        this.processedFrom = processedFrom;
+    }
+
+    public void setProcessedTo(Timestamp processedTo) {
+        this.processedTo = processedTo;
     }
 }

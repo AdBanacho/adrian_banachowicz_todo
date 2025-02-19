@@ -30,7 +30,7 @@ public class Task {
     @Id
     private Timestamp processedTo;
 
-    protected Task(){}
+    public Task(){}
 
     public Task(String id,
                 String name,
@@ -176,5 +176,49 @@ public class Task {
     public void closeTaskEntity() {
         this.processedTo = Timestamp.valueOf(LocalDateTime.now());
         this.category = null;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setDeadLine(Timestamp deadLine) {
+        this.deadLine = deadLine;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public void setPriorityStatus(TaskPriorityStatus priorityStatus) {
+        this.priorityStatus = priorityStatus;
+    }
+
+    public void setAssignedTo(String assignedTo) {
+        this.assignedTo = assignedTo;
+    }
+
+    public void setReportedBy(String reportedBy) {
+        this.reportedBy = reportedBy;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public void setProcessedFrom(Timestamp processedFrom) {
+        this.processedFrom = processedFrom;
+    }
+
+    public void setProcessedTo(Timestamp processedTo) {
+        this.processedTo = processedTo;
     }
 }

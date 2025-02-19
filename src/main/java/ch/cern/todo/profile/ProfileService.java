@@ -32,7 +32,7 @@ public class ProfileService {
          };
     }
 
-    private static String getLoggedInUsername() {
+    public static String getLoggedInUsername() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
