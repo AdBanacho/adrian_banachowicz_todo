@@ -28,4 +28,8 @@ public enum TaskStatus {
                 .findFirst()
                 .orElse(null);
     }
+
+    public boolean isDeleted(){
+        return TaskStatus.DELETED.equals(this);
+    }
 }

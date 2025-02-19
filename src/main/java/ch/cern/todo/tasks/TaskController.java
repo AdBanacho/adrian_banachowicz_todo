@@ -56,4 +56,10 @@ public class TaskController {
     public ResponseEntity<TaskResource> updateCategory(@PathVariable String id, @RequestParam String categoryName){
         return ResponseEntity.ok(taskService.updateCategory(id, categoryName));
     }
+
+    @PutMapping(value = "/deleteTask/{id}")
+    public ResponseEntity<Void> deleteTask(@PathVariable String id) {
+        taskService.deleteTask(id);
+        return ResponseEntity.ok().build();
+    }
 }

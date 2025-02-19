@@ -2,8 +2,10 @@ package ch.cern.todo.category;
 
 import ch.cern.todo.category.dataModels.Category;
 import ch.cern.todo.category.dataModels.CategoryResource;
+import ch.cern.todo.category.dataModels.CategoryStatus;
 import ch.cern.todo.exceptions.ValidationException;
 import ch.cern.todo.tasks.TaskService;
+import ch.cern.todo.tasks.dataModels.Task;
 import ch.cern.todo.tasks.dataModels.TaskResource;
 import ch.cern.todo.validation.InputFieldValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,18 +70,33 @@ public class CategoryServiceImpl implements CategoryService {
         Category existingCategory = categoryRepository.findByIdAndProcessedTo(categoryResource.id()).orElse(null);
         validateUpdatingCategoryInput(categoryResource, existingCategory);
         Category categoryToUpdate = categoryResource.transferToExistingEntity(existingCategory);
-        existingCategory.closeCategoryEntity();
-        categoryRepository.save(existingCategory);
-        Category updatedCategory = categoryRepository.save(categoryToUpdate);
+        Category updatedCategory = saveUpdatedCategory(existingCategory, categoryToUpdate);
         return updatedCategory.transferToResource();
     }
 
-    private static void validateUpdatingCategoryInput(CategoryResource categoryResource, Category category) {
+    private void validateUpdatingCategoryInput(CategoryResource categoryResource, Category existingCategorySameId) {
         List<String> errorMessages = new ArrayList<>();
-        InputFieldValidator.validateIfNotEntityExists(CATEGORY, categoryResource.id(), category);
+        Category existingCategorySameName = categoryRepository.findByCategoryNameAndProcessedTo(categoryResource.name()).orElse(null);
+        InputFieldValidator.validateIfNotEntityExists(CATEGORY, categoryResource.id(), existingCategorySameId);
+        InputFieldValidator.validateIfCategoryNameIsUnique(existingCategorySameId, existingCategorySameName, errorMessages);
         InputFieldValidator.validateFieldNotEmpty(CATEGORY, "name", categoryResource.name(), errorMessages);
         if (!errorMessages.isEmpty()) {
             throw new ValidationException(String.join(", \n", errorMessages));
         }
+    }
+
+    @Override
+    public void deleteCategory(String id) {
+        Category existingCategory = categoryRepository.findByIdAndProcessedTo(id).orElse(null);
+        InputFieldValidator.validateIfNotEntityExists(CATEGORY, id, existingCategory);
+        Category categoryWithUpdatedStatus = existingCategory.updateStatus(CategoryStatus.DELETED);
+        existingCategory.getTasks().stream().map(Task::getId).forEach(taskService::deleteTask);
+        saveUpdatedCategory(existingCategory, categoryWithUpdatedStatus);
+    }
+
+    private Category saveUpdatedCategory(Category existingCategory, Category categoryWithUpdatedData) {
+        existingCategory.closeCategoryEntity();
+        categoryRepository.save(existingCategory);
+        return categoryRepository.save(categoryWithUpdatedData);
     }
 }

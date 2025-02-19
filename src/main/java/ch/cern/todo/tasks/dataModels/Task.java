@@ -91,15 +91,15 @@ public class Task {
 
     public Task updateStatus(TaskStatus taskStatus){
         return new Task(
-                this.getId(),
-                this.getName(),
-                this.getDescription(),
-                this.getDeadLine(),
+                getId(),
+                getName(),
+                getDescription(),
+                getDeadLine(),
                 taskStatus,
-                this.getPriorityStatus(),
-                this.getAssignedTo(),
-                this.getReportedBy(),
-                this.getCategory(),
+                getPriorityStatus(),
+                getAssignedTo(),
+                getReportedBy(),
+                taskStatus.isDeleted() ? null : getCategory(),
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
         );
@@ -107,14 +107,14 @@ public class Task {
 
     public Task updateCategory(Category category){
         return new Task(
-                this.getId(),
-                this.getName(),
-                this.getDescription(),
-                this.getDeadLine(),
-                this.getStatus(),
-                this.getPriorityStatus(),
-                this.getAssignedTo(),
-                this.getReportedBy(),
+                getId(),
+                getName(),
+                getDescription(),
+                getDeadLine(),
+                getStatus(),
+                getPriorityStatus(),
+                getAssignedTo(),
+                getReportedBy(),
                 category,
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))

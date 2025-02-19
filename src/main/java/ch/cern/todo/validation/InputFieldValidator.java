@@ -1,5 +1,6 @@
 package ch.cern.todo.validation;
 
+import ch.cern.todo.category.dataModels.Category;
 import ch.cern.todo.exceptions.EntityAlreadyExistsException;
 import ch.cern.todo.exceptions.EntityNotExistException;
 
@@ -7,6 +8,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public final class InputFieldValidator {
 
@@ -43,4 +45,11 @@ public final class InputFieldValidator {
         }
     }
 
+    public static void validateIfCategoryNameIsUnique(Category existingCategorySameId, Category existingCategorySameName, List<String> errorMessages){
+        String sameIdId = Optional.ofNullable(existingCategorySameId).map(Category::getId).orElse(null);
+        String sameNameId = Optional.ofNullable(existingCategorySameName).map(Category::getId).orElse(null);
+        if (sameIdId != null && sameNameId != null && !sameIdId.equals(sameNameId)){
+            errorMessages.add("Name " + existingCategorySameName.getName() +  " is used by category of id: " + sameNameId);
+        }
+    }
 }

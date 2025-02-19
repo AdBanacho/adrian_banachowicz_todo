@@ -13,4 +13,6 @@ public interface CategoryService {
     CategoryResource saveCategory(CategoryResource categoryResource);
 
     CategoryResource updateDetails(CategoryResource categoryResource);
+
+    void deleteCategory(String id);
 }

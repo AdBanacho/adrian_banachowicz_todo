@@ -1,8 +1,9 @@
 
 CREATE TABLE category (
     id UUID NOT NULL,
-    name VARCHAR(255) UNIQUE NOT NULL,
+    name VARCHAR(255) NOT NULL,
     description TEXT,
+    status VARCHAR(50),
     processed_from TIMESTAMP,
     processed_to TIMESTAMP NOT NULL,
     PRIMARY KEY (id, processed_to)

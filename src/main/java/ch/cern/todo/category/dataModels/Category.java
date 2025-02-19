@@ -15,9 +15,9 @@ import java.util.UUID;
 public class Category {
     @Id
     private String id;
-    @Column(unique = true)
     private String name;
     private String description;
+    private CategoryStatus status;
     @OneToMany(mappedBy = "category", fetch = FetchType.EAGER)
     private List<Task> tasks;
     // Attributes to keep track of the milestones
@@ -31,12 +31,14 @@ public class Category {
     public Category(String id,
                     String name,
                     String description,
+                    CategoryStatus status,
                     List<Task> tasks,
                     Timestamp processedFrom,
                     Timestamp processedTo){
         this.id = id;
         this.name = name;
         this.description = description;
+        this.status = status;
         this.tasks = tasks;
         this.processedFrom = processedFrom;
         this.processedTo = processedTo;
@@ -47,6 +49,7 @@ public class Category {
                 UUID.randomUUID().toString(),
                 categoryResource.name(),
                 categoryResource.description(),
+                CategoryStatus.ACTIVE,
                 Collections.emptyList(),
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
@@ -58,11 +61,24 @@ public class Category {
                 category.getId(),
                 categoryResource.name(),
                 categoryResource.description(),
+                category.getStatus(),
                 category.getTasks(),
                 Timestamp.valueOf(LocalDateTime.now()),
                 Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
         );
     }
+    public Category updateStatus(CategoryStatus categoryStatus){
+        return new Category(
+                getId(),
+                getName(),
+                getDescription(),
+                categoryStatus,
+                categoryStatus.isDeleted() ? Collections.emptyList() : getTasks(),
+                Timestamp.valueOf(LocalDateTime.now()),
+                Timestamp.valueOf(LocalDateTime.of(9999,12,31,12,0,0))
+        );
+    }
+
 
     public CategoryResource transferToResource(){
         return CategoryResource.from(this);
@@ -82,6 +98,10 @@ public class Category {
 
     public String getDescription() {
         return description;
+    }
+
+    public CategoryStatus getStatus() {
+        return status;
     }
 
     public List<Task> getTasks() {

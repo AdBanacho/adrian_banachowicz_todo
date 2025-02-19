@@ -114,16 +114,26 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private TaskResource updateTask(Task existingTask, Task taskWithUpdatedStatus) {
-        closeTaskEntity(existingTask);
-        Task updatedTask = taskRepository.save(taskWithUpdatedStatus);
+        Task updatedTask = saveUpdatedTask(existingTask, taskWithUpdatedStatus);
         return mapToResourceWithFullNames(updatedTask);
+    }
+
+    @Override
+    public void deleteTask(String id) {
+        Task existingTask = taskRepository.findByIdAndProcessedTo(id).orElse(null);
+        InputFieldValidator.validateIfNotEntityExists(TASK, id, existingTask);
+        Task taskWithUpdatedStatus = existingTask.updateStatus(TaskStatus.DELETED);
+        saveUpdatedTask(existingTask, taskWithUpdatedStatus);
+    }
+
+    private Task saveUpdatedTask(Task existingTask, Task taskWithUpdatedData) {
+        closeTaskEntity(existingTask);
+        return taskRepository.save(taskWithUpdatedData);
     }
 
     private void closeTaskEntity(Task existingTask) {
         existingTask.closeTaskEntity();
         taskRepository.save(existingTask);
     }
-
-
 
 }

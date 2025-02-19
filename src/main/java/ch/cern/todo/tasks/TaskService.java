@@ -20,4 +20,6 @@ public interface TaskService {
     TaskResource updateStatus(String id, TaskStatus taskStatus);
 
     TaskResource updateCategory(String id, String categoryName);
+
+    void deleteTask(String id);
 }

@@ -38,4 +38,10 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.updateDetails(categoryResource));
     }
 
+    @PutMapping(value = "/deleteCategory/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable String id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
