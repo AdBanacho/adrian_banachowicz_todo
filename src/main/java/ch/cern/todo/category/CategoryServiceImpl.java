@@ -4,13 +4,19 @@ import ch.cern.todo.category.dataModels.Category;
 import ch.cern.todo.category.dataModels.CategoryResource;
 import ch.cern.todo.category.dataModels.CategoryStatus;
 import ch.cern.todo.exceptions.ValidationException;
+import ch.cern.todo.searchEngine.CategorySearchEngineService;
+import ch.cern.todo.searchEngine.SearchCriteria;
 import ch.cern.todo.tasks.TaskService;
 import ch.cern.todo.tasks.dataModels.Task;
 import ch.cern.todo.tasks.dataModels.TaskResource;
 import ch.cern.todo.validation.InputFieldValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +34,19 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryResource> getAllCategories() {
-        List<Category> categories = categoryRepository.findAllByProcessedTo();
-        return categories.stream().map(Category::transferToResource).toList();
+    public Page<CategoryResource> getAllCategories(Pageable pageable, List<SearchCriteria> searchCriteriaList) {
+        Specification<Category> baseSpec = (root, query, builder) -> builder.and(
+                builder.notEqual(root.get("status"), CategoryStatus.DELETED),
+                builder.equal(root.get("processedTo"), Timestamp.valueOf("9999-12-31 12:00:00"))
+        );
+
+        Specification<Category> dynamicSpec = Specification.where(null);
+        for (SearchCriteria criteria : searchCriteriaList) {
+            dynamicSpec = dynamicSpec.and(new CategorySearchEngineService(criteria));
+        }
+
+        Page<Category> categories = categoryRepository.findAll(baseSpec.and(dynamicSpec), pageable);
+        return categories.map(Category::transferToResource);
     }
 
     @Override

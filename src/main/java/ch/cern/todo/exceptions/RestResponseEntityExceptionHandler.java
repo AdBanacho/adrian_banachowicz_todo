@@ -73,6 +73,21 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(InvalidSearchCriteriaException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidSearchCriteriaExceptionException(
+            InvalidSearchCriteriaException ex, WebRequest request) {
+
+        logger.error("Invalid Search Criteria: {}", ex.getMessage());
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getMessage(),
+                HttpStatus.FORBIDDEN.value(),
+                request.getContextPath()
+        );
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex, WebRequest request) {

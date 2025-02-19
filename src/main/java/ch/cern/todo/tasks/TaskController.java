@@ -1,5 +1,6 @@
 package ch.cern.todo.tasks;
 
+import ch.cern.todo.searchEngine.SearchCriteria;
 import ch.cern.todo.tasks.dataModels.TaskResource;
 import ch.cern.todo.tasks.dataModels.TaskStatus;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/task")
@@ -27,10 +30,11 @@ public class TaskController {
     public ResponseEntity<Page<TaskResource>> getAllTasks(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size,
                                                           @RequestParam(defaultValue = "id") String sortBy,
-                                                          @RequestParam(defaultValue = "true") boolean ascending){
+                                                          @RequestParam(defaultValue = "true") boolean ascending,
+                                                          @RequestBody List<SearchCriteria> searchCriteriaList){
         Sort sort = ascending ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<TaskResource> allTasks = taskService.getAllTasks(pageable);
+        Page<TaskResource> allTasks = taskService.getAllTasks(pageable, searchCriteriaList);
         return ResponseEntity.ok(allTasks);
     }
 
