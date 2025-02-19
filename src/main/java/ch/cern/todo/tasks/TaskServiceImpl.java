@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -79,6 +80,7 @@ public class TaskServiceImpl implements TaskService {
     public TaskResource updateDetails(TaskResource taskResource) {
         Task existingTask = taskRepository.findByIdAndProcessedTo(taskResource.id()).orElse(null);
         validateUpdatingTaskInput(taskResource, existingTask);
+        ProfileService.validationSameUser(Arrays.asList(taskResource.reportedBy(), taskResource.assignedTo()), "Task details");
         Task taskToUpdate = taskResource.transferToExistingEntity(existingTask);
         return updateTask(existingTask, taskToUpdate);
     }
